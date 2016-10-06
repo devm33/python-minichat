@@ -1,0 +1,15 @@
+runtime: python27
+api_version: 1
+threadsafe: true
+
+- url: /.*
+  script: server.app
+
+inbound_services:
+- channel_presence
+
+libraries:
+- name: webapp2
+  version: latest
+- name: jinja2
+  version: latest
