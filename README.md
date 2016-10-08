@@ -271,9 +271,11 @@ dev_appserver.py .
 
 You should see something like this when you go to <http://localhost:8080>
 
-![screenshot](img/screenshot.png)
+![screenshot empty](img/screenshot-empty.png)
 
 Try opening the page in an incognito window to chat as a new user.
+
+![screenshot](img/screenshot.png)
 
 ### 5. Deploy to App Engine
 
