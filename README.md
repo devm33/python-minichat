@@ -157,6 +157,128 @@ app = webapp2.WSGIApplication([
 ], debug=True)
 ```
 
+### 3. Create HTML and JavaScript Frontend
 
+Create an `index.html` file with:
 
+- a `div` to display the messages in
+- a `form` to send a chat message
+- a `script` to load `/_ah/channel/jsapi`
+- an inline `script` to initialize the App Engine channel using the token from
+  the backend
+- a `script` to load `/static/main.js`
 
+```html
+<!DOCTYPE html>
+<div id="messages"></div>
+<form id="message-form">
+  <input type="text" id="message">
+  <button type="submit">Send</button>
+</form>
+
+<script src="/_ah/channel/jsapi"></script>
+<script>
+  window.channel = new goog.appengine.Channel('{{ token }}');
+</script>
+<script src="/static/main.js"></script>
+```
+
+The `{{ token }}` is replaced with the unique user token by jinja before the
+`index.html` is sent to the browser.
+
+Now we need to write the JavaScript to send and receive chat messages. Create a
+folder `static` in the project directory then a file in that folder `main.js`.
+
+The first thing to do is create a `Chat` class and bind to the html elements
+from `index.html` and open a connection to the python backend.
+
+```js
+// Initializes Chat
+function Chat() {
+  // Shortcuts to DOM Elements.
+  this.messageList = document.getElementById('messages');
+  this.messageForm = document.getElementById('message-form');
+  this.messageInput = document.getElementById('message');
+
+  // Saves message on form submit.
+  this.messageForm.addEventListener('submit', this.saveMessage.bind(this));
+
+  // Focus on the input
+  this.messageInput.focus();
+
+  // Open Channel connection.
+  window.channel.open({
+    onopen: function(){},
+    onerror: function(){},
+    onclose: function(){},
+    onmessage: this.displayMessage.bind(this)
+  });
+}
+
+window.onload = function() {
+  new Chat();
+};
+```
+
+When opening the connection we have the option to specify functions to be called
+when other events occur on the channel connection such as a disconnect or an
+error. We only need to concern ourselves with the `onmessage` function but feel
+free to add `console.log` statements to the other functions to see when they
+might be called.
+
+Now there are two functions referenced in the initialization code that need to
+be defined `saveMessage` and `displayMessage`. Let's start with displaying a
+message.
+
+```js
+// Displays a Message in the UI.
+Chat.prototype.displayMessage = function(message) {
+  var msg = document.createElement('div');
+  msg.innerHTML = message.data;
+  this.messageList.appendChild(msg);
+};
+```
+
+This function uses the channel connection to receive the message data from the
+backend.
+
+In order to send a message to the backend we will have to open a new connection.
+
+```js
+// Sends user's message to the python backend
+Chat.prototype.saveMessage = function(e) {
+  e.preventDefault();
+  // Check that the user entered a message.
+  if (this.messageInput.value) {
+    // Post message to ChatHandler
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/chat', true);
+    xhr.send(this.messageInput.value);
+    // Clear message text field and focus on it.
+    this.messageInput.value = '';
+    this.messageInput.focus();
+  }
+};
+```
+
+### 4. Test locally
+
+In the project directory run this command to test your project on your machine:
+
+```
+dev_appserver.py .
+```
+
+You should see something like this when you go to <http://localhost:8080>
+
+![screenshot](img/screenshot.png)
+
+Try opening the page in an incognito window to chat as a new user.
+
+### 5. Deploy to App Engine
+
+To deploy your app and make it publicly available run
+
+```
+gcloud app deploy
+```
