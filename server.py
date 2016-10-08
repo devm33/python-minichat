@@ -20,9 +20,7 @@ class ChatHandler(webapp2.RequestHandler):
     message = self.request.body
     if message:
       formatted_message = '%s: %s' % (user.nickname(), message)
-      print 'has message %s' % formatted_message
       for activeuser in ActiveUser.query():
-        print 'sending message to %s' % activeuser.userid
         channel.send_message(activeuser.userid, formatted_message)
 
 class DisconnectHandler(webapp2.RequestHandler):
@@ -49,5 +47,5 @@ class MainHandler(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/chat', ChatHandler),
-    ('/_ah/channel/disconnected', DisconnectHandler),
+    ('/_ah/channel/disconnected/', DisconnectHandler),
 ], debug=True)
