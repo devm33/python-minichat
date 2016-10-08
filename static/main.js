@@ -16,7 +16,8 @@ function Chat() {
     onopen: function(){},
     onerror: function(){},
     onclose: function(){},
-    onmessage: this.displayMessage.bind(this)});
+    onmessage: this.displayMessage.bind(this)
+  });
 }
 
 // Sends user's message to the python backend
