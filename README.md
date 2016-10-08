@@ -105,7 +105,8 @@ class ActiveUser(ndb.Model):
   userid = ndb.StringProperty()
 ```
 
-This will help keep track of users currently chatting on our site.
+This will help keep track of users currently chatting on our site by storing
+them in the App Engine datastore.
 
 Now our app needs a handler for the site to actually send chats to. When a user
 send a chat to the backend this handler will send out that message to each
