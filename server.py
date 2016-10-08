@@ -1,3 +1,4 @@
+import os
 import jinja2
 import webapp2
 
@@ -16,17 +17,13 @@ class ActiveUser(ndb.Model):
 class ChatHandler(webapp2.RequestHandler):
   def post(self):
     user = users.get_current_user()
-    message = self.request.get('message')
+    message = self.request.body
     if message:
-      formatted_message = '%s: %s' % (user, message)
-      for userid in ActiveUser.query():
-        channel.send(userid, formatted_message)
-
-class ConnectHandler(webapp2.RequestHandler):
-  def post(self):
-    userid = self.request.get('from')
-    if userid:
-      ActiveUser(userid=userid, id=userid).put()
+      formatted_message = '%s: %s' % (user.nickname(), message)
+      print 'has message %s' % formatted_message
+      for activeuser in ActiveUser.query():
+        print 'sending message to %s' % activeuser.userid
+        channel.send_message(activeuser.userid, formatted_message)
 
 class DisconnectHandler(webapp2.RequestHandler):
   def post(self):
@@ -41,15 +38,16 @@ class MainHandler(webapp2.RequestHandler):
     if user:
       # Create unique chat channel for user and save to active list
       token = channel.create_channel(user.user_id())
+      # Add user to active users
+      ActiveUser(userid=user.user_id(), id=user.user_id()).put()
       # Render index.html for user
       template = JINJA_ENVIRONMENT.get_template('index.html')
       self.response.write(template.render({'token': token}))
     else:
-      self.redirect(users.create_login_url(self.request_uri))
+      self.redirect(users.create_login_url(self.request.uri))
 
 app = webapp2.WSGIApplication([
     ('/', MainHandler),
     ('/chat', ChatHandler),
-    ('/_ah/channel/connected', ConnectHandler),
-    ('/_ah_channel/disconnected', DisconnectHandler),
+    ('/_ah/channel/disconnected', DisconnectHandler),
 ], debug=True)
