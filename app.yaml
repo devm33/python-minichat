@@ -2,7 +2,12 @@ runtime: python27
 api_version: 1
 threadsafe: true
 
+handlers:
+- url: /static
+  static_dir: static
 - url: /.*
+  script: server.app
+- url: /_ah/channel/disconnected/
   script: server.app
 
 inbound_services:
