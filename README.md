@@ -4,25 +4,7 @@ Minimal chat example using python on App Engine.
 
 Deployed at <https://python-minichat-145600.appspot.com/>
 
-### 1. Create new project on App Engine
-
-Go to <https://console.cloud.google.com> and click on CREATE PROJECT
-
-![create project button](img/create-project-button.png)
-
-Choose a project name for your project:
-
-![new project dialog](img/new-project-dialog.png)
-
-Install the Google Cloud Tools from here <https://cloud.google.com/sdk/docs/>
-
-Once installed run
-
-    gcloud init
-    
-Login and select the project you just created.
-
-### 2. Create Python Backend
+### 1. Create Python Backend
 
 In your project directory create an `app.yaml` file with the following contents:
 
@@ -157,7 +139,7 @@ app = webapp2.WSGIApplication([
 ], debug=True)
 ```
 
-### 3. Create HTML and JavaScript Frontend
+### 2. Create HTML and JavaScript Frontend
 
 Create an `index.html` file with:
 
@@ -261,7 +243,9 @@ Chat.prototype.saveMessage = function(e) {
 };
 ```
 
-### 4. Test locally
+### 3. Test locally
+
+Install the Google Cloud Tools from here <https://cloud.google.com/sdk/docs/>
 
 In the project directory run this command to test your project on your machine:
 
@@ -277,7 +261,22 @@ Try opening the page in an incognito window to chat as a new user.
 
 ![screenshot](img/screenshot.png)
 
-### 5. Deploy to App Engine
+### 4. Deploy to App Engine
+
+Go to <https://console.cloud.google.com> and click on CREATE PROJECT
+
+![create project button](img/create-project-button.png)
+
+Choose a project name for your project:
+
+![new project dialog](img/new-project-dialog.png)
+
+Once installed run
+
+    gcloud init
+    
+Login and select the project you just created.
+
 
 To deploy your app and make it publicly available run
 
